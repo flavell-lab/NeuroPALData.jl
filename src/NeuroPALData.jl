@@ -2,7 +2,7 @@ module NeuroPALData
 
 using DelimitedFiles
 
-include("refernece.jl")
+include("reference.jl")
 include("import.jl")
 
 export invert_left_right,
