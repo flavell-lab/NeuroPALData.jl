@@ -92,8 +92,8 @@ function get_neuron_class(neuron)
     neuron_ = occursin("-", neuron) ? split(neuron, "-")[1] : neuron
     neuron_ = String(strip(neuron_))
     class = neuron_
-    LR = nothing
-    DV = nothing
+    LR = "undefined"
+    DV = "undefined"
   
     if haskey(NEURON_REF_DICT, neuron_)
         neuron_info = NEURON_REF_DICT[neuron_]
