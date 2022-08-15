@@ -1,0 +1,4 @@
+name = "NeuroPALData"
+uuid = "8fd4412b-7bf2-4997-ad8f-426a32b85ee6"
+authors = ["Jungsoo Kim <jungsu93@gmail.com>"]
+version = "0.1.0"
