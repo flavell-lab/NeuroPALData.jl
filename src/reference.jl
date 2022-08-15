@@ -1,5 +1,7 @@
 const path_neuron_class_all = joinpath(dirname(@__FILE__), "reference", "neuron_class_all.csv")
 
+const LIST_REF_CLASS_SEXTET = ["IL1", "IL2", "RMD", "GLR"]
+
 const LIST_REF_NEURON, LIST_REF_CLASS, LIST_REF_CLASS_LR, LIST_REF_CLASS_DV, NEURON_REF_DICT = let
     csv_ = readdlm(path_neuron_class_all,',')
     list_neuron = String.(csv_[2:end,1])
