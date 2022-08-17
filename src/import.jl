@@ -13,17 +13,17 @@ function get_neuron_roi(roi)
 end
 
 function import_neuropal_label(path_label::String)
-    if endswith(path_xlsx, ".xlsx")
+    if endswith(path_label, ".xlsx")
         list_sheets = XLSX.openxlsx(path_label, mode="r") do xlsx
             XLSX.sheetnames(xlsx)
         end
         list_sheets_label = sort(filter(x->occursin("labels",x), list_sheets))
         sheet_ = list_sheets_label[end]
-        println("reading $(sheet_) for $path_xlsx")
+        println("reading $(sheet_) for $path_label")
         sheet_label = XLSX.readtable(path_label, sheet_)
         data_ = hcat(sheet_label.data...)
         import_neuropal_label(data_)
-    elseif endswith(path_xlsx, ".csv")
+    elseif endswith(path_label, ".csv")
         data_ = readdlm(path_label, ',')
         import_neuropal_label(data_)
     else
