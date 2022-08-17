@@ -12,23 +12,40 @@ function get_neuron_roi(roi)
     end
 end
 
-function import_neuropal_label(path_csv)
-    csv_ = readdlm(path_csv, ',')
-    
+function import_neuropal_label(path_label::String)
+    if endswith(path_xlsx, ".xlsx")
+        list_sheets = XLSX.openxlsx(path_label, mode="r") do xlsx
+            XLSX.sheetnames(xlsx)
+        end
+        list_sheets_label = sort(filter(x->occursin("labels",x), list_sheets))
+        sheet_ = list_sheets_label[end]
+        println("reading $(sheet_) for $path_xlsx")
+        sheet_label = XLSX.readtable(path_label, sheet_)
+        data_ = hcat(sheet_label.data...)
+        import_neuropal_label(data_)
+    elseif endswith(path_xlsx, ".csv")
+        data_ = readdlm(path_label, ',')
+        import_neuropal_label(data_)
+    else
+        error("unsupported data type. supported: csv, xlsx")
+    end
+end
+
+function import_neuropal_label(data_::Matrix)
     neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
-    list_roi = get_neuron_roi.(csv_[2:end,3])
+    list_roi = get_neuron_roi.(data_[2:end,3])
 
     for roi_id = sort(unique(vcat(list_roi...)))
         idx_row_match = findall(roi_id .∈ list_roi)        
         list_match = Dict{String,Any}[]
 
         for i_row = (idx_row_match .+ 1) # offset column label
-            label = csv_[i_row,1]
+            label = data_[i_row,1]
             neuron_class, DV, LR = get_neuron_class(label)
-            roi_id_ = csv_[i_row,3]
-            confidence = csv_[i_row,4]
-            comment = csv_[i_row,5]
-            region = csv_[i_row,6]
+            roi_id_ = data_[i_row,3]
+            confidence = data_[i_row,4]
+            comment = data_[i_row,5]
+            region = data_[i_row,6]
             
             match_ = Dict{}()
             match_["label"] = label
@@ -46,17 +63,17 @@ function import_neuropal_label(path_csv)
     end
     
     neuropal_label_to_roi = Dict{String, Any}()
-    list_class = map(x->get_neuron_class(x)[1], csv_[2:end, 1])
+    list_class = map(x->get_neuron_class(x)[1], data_[2:end, 1])
     for class = unique(list_class)
         idx_row_match = findall(class .== list_class)
         list_match = Dict{String,Any}[]
         for i_row = (idx_row_match .+ 1) # offset column label
-            label = csv_[i_row,1]
+            label = data_[i_row,1]
             neuron_class, DV, LR = get_neuron_class(label)
-            roi_id_ = csv_[i_row,3]
-            confidence = csv_[i_row,4]
-            comment = csv_[i_row,5]
-            region = csv_[i_row,6]
+            roi_id_ = data_[i_row,3]
+            confidence = data_[i_row,4]
+            comment = data_[i_row,5]
+            region = data_[i_row,6]
 
             match_ = Dict{}()
             match_["label"] = label

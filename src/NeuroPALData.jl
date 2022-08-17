@@ -1,6 +1,6 @@
 module NeuroPALData
 
-using DelimitedFiles
+using DelimitedFiles, XLSX
 
 include("reference.jl")
 include("import.jl")
