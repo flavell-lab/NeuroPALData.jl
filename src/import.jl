@@ -9,7 +9,7 @@ function get_neuron_roi(roi)
         return [roi]
     elseif isa(roi, Float64)
         if isinteger(roi)
-            return [parse(Int, roi)]
+            return [convert(Int, roi)]
         else
             error("ROI($roi) is not integer")
         end
