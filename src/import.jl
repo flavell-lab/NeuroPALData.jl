@@ -29,7 +29,8 @@ function import_neuropal_label(path_label::String)
         sheet_label = XLSX.readtable(path_label, sheet_)
         col_label = sheet_label.column_labels
         data_ = vcat(reshape(string.(col_label), (1,length(col_label))),
-        import_neuropal_label(hcat(sheet_label.data...)))
+            hcat(sheet_label.data...))
+    import_neuropal_label(data_)
     elseif endswith(path_label, ".csv")
         data_ = readdlm(path_label, ',')
         import_neuropal_label(data_)
