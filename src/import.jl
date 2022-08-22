@@ -23,7 +23,7 @@ function import_neuropal_label(path_label::String)
         list_sheets = XLSX.openxlsx(path_label, mode="r") do xlsx
             XLSX.sheetnames(xlsx)
         end
-        list_sheets_label = sort(filter(x->occursin("labels",x) !& occursin("progress",x), list_sheets))
+        list_sheets_label = sort(filter(x->occursin("labels",x) && !occursin("progress",x), list_sheets))
         sheet_ = list_sheets_label[end]
         println("reading $(sheet_) for $path_label")
         sheet_label = XLSX.readtable(path_label, sheet_)
