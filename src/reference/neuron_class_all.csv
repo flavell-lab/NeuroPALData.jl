@@ -386,67 +386,67 @@ mu_intL,mu_int,missing,L,muscle,endorgan,
 mu_intR,mu_int,missing,R,muscle,endorgan,
 mu_anal,mu_anal,missing,missing,muscle,endorgan,
 mu_sphincter,mu_sphincter,missing,missing,muscle,endorgan,
-I1L,I1,missing,L,interneuron,,
-I1R,I1,missing,R,interneuron,,
-I2L,I2,missing,L,interneuron,,
-I2R,I2,missing,R,interneuron,,
-I3,I3,missing,missing,interneuron,,
-I4,I4,missing,missing,interneuron,,
-I5,I5,missing,missing,interneuron,,
-I6,I6,missing,missing,interneuron,,
-M1,M1,missing,missing,motorneuron,,
-M2L,M2,missing,L,motorneuron,,
-M2R,M2,missing,R,motorneuron,,
-M3L,M3,missing,L,motorneuron,,
-M3R,M3,missing,R,motorneuron,,
-M4,M4,missing,missing,motorneuron,,
-M5,M5,missing,missing,motorneuron,,
-MCL,MC,missing,L,motorneuron,,
-MCR,MC,missing,R,motorneuron,,
-MI,MI,missing,missing,motorneuron,,
-NSML,NSM,missing,L,interneuron,,
-NSMR,NSM,missing,R,interneuron,,
-pm1,pm1,missing,missing,muscle (myoepithelium),,
-pm2d,pm2d,missing,missing,muscle (myoepithelium),,
-pm2vl,pm2vl,missing,missing,muscle (myoepithelium),,
-pm2vr,pm2vr,missing,missing,muscle (myoepithelium),,
-pm3d,pm3d,missing,missing,muscle (myoepithelium),,
-pm3vl,pm3vl,missing,missing,muscle (myoepithelium),,
-pm3vr,pm3vr,missing,missing,muscle (myoepithelium),,
-pm4d,pm4d,missing,missing,muscle (myoepithelium),,
-pm4vl,pm4vl,missing,missing,muscle (myoepithelium),,
-pm4vr,pm4vr,missing,missing,muscle (myoepithelium),,
-pm5d,pm5d,missing,missing,muscle (myoepithelium),,
-pm5vl,pm5vl,missing,missing,muscle (myoepithelium),,
-pm5vr,pm5vr,missing,missing,muscle (myoepithelium),,
-pm6d,pm6d,missing,missing,muscle (myoepithelium),,
-pm6vl,pm6vl,missing,missing,muscle (myoepithelium),,
-pm6vr,pm6vr,missing,missing,muscle (myoepithelium),,
-pm7d,pm7d,missing,missing,muscle (myoepithelium),,
-pm7vl,pm7vl,missing,missing,muscle (myoepithelium),,
-pm7vr,pm7vr,missing,missing,muscle (myoepithelium),,
-pm8,pm8,missing,missing,muscle (myoepithelium),,
-mc1dl,mc1dl,missing,missing,marginal cell,,
-mc1dr,mc1dr,missing,missing,marginal cell,,
-mc1v,mc1v,missing,missing,marginal cell,,
-mc2dl,mc2dl,missing,missing,marginal cell,,
-mc2dr,mc2dr,missing,missing,marginal cell,,
-mc2v,mc2v,missing,missing,marginal cell,,
-mc3dl,mc3dl,missing,missing,marginal cell,,
-mc3dr,mc3dr,missing,missing,marginal cell,,
-mc3v,mc3v,missing,missing,marginal cell,,
-e1D,e1D,missing,missing,epithelium,,
-e1VL,e1V,missing,L,epithelium,,
-e1VR,e1V,missing,R,epithelium,,
-e2DL,e2D,missing,L,epithelium,,
-e2DR,e2D,missing,R,epithelium,,
-e2V,e2V,missing,missing,epithelium,,
-e3D,e3D,missing,missing,epithelium,,
-e3VL,e3V,missing,L,epithelium,,
-e3VR,e3V,missing,R,epithelium,,
-g1P,g1P,missing,missing,glial cell,,
-g1AL,g1A,missing,L,glial cell,,
-g1AR,g1A,missing,R,glial cell,,
-g2L,g2,missing,L,glial cell,,
-g2R,g2,missing,R,glial cell,,
-bm,bm,missing,missing,basement membrane,,
+I1L,I1,missing,L,interneuron,,pharynx
+I1R,I1,missing,R,interneuron,,pharynx
+I2L,I2,missing,L,interneuron,,pharynx
+I2R,I2,missing,R,interneuron,,pharynx
+I3,I3,missing,missing,interneuron,,pharynx
+I4,I4,missing,missing,interneuron,,pharynx
+I5,I5,missing,missing,interneuron,,pharynx
+I6,I6,missing,missing,interneuron,,pharynx
+M1,M1,missing,missing,motorneuron,,pharynx
+M2L,M2,missing,L,motorneuron,,pharynx
+M2R,M2,missing,R,motorneuron,,pharynx
+M3L,M3,missing,L,motorneuron,,pharynx
+M3R,M3,missing,R,motorneuron,,pharynx
+M4,M4,missing,missing,motorneuron,,pharynx
+M5,M5,missing,missing,motorneuron,,pharynx
+MCL,MC,missing,L,motorneuron,,pharynx
+MCR,MC,missing,R,motorneuron,,pharynx
+MI,MI,missing,missing,motorneuron,,pharynx
+NSML,NSM,missing,L,interneuron,,pharynx
+NSMR,NSM,missing,R,interneuron,,pharynx
+pm1,pm1,missing,missing,muscle (myoepithelium),,pharynx
+pm2d,pm2d,missing,missing,muscle (myoepithelium),,pharynx
+pm2vl,pm2vl,missing,missing,muscle (myoepithelium),,pharynx
+pm2vr,pm2vr,missing,missing,muscle (myoepithelium),,pharynx
+pm3d,pm3d,missing,missing,muscle (myoepithelium),,pharynx
+pm3vl,pm3vl,missing,missing,muscle (myoepithelium),,pharynx
+pm3vr,pm3vr,missing,missing,muscle (myoepithelium),,pharynx
+pm4d,pm4d,missing,missing,muscle (myoepithelium),,pharynx
+pm4vl,pm4vl,missing,missing,muscle (myoepithelium),,pharynx
+pm4vr,pm4vr,missing,missing,muscle (myoepithelium),,pharynx
+pm5d,pm5d,missing,missing,muscle (myoepithelium),,pharynx
+pm5vl,pm5vl,missing,missing,muscle (myoepithelium),,pharynx
+pm5vr,pm5vr,missing,missing,muscle (myoepithelium),,pharynx
+pm6d,pm6d,missing,missing,muscle (myoepithelium),,pharynx
+pm6vl,pm6vl,missing,missing,muscle (myoepithelium),,pharynx
+pm6vr,pm6vr,missing,missing,muscle (myoepithelium),,pharynx
+pm7d,pm7d,missing,missing,muscle (myoepithelium),,pharynx
+pm7vl,pm7vl,missing,missing,muscle (myoepithelium),,pharynx
+pm7vr,pm7vr,missing,missing,muscle (myoepithelium),,pharynx
+pm8,pm8,missing,missing,muscle (myoepithelium),,pharynx
+mc1dl,mc1dl,missing,missing,marginal cell,,pharynx
+mc1dr,mc1dr,missing,missing,marginal cell,,pharynx
+mc1v,mc1v,missing,missing,marginal cell,,pharynx
+mc2dl,mc2dl,missing,missing,marginal cell,,pharynx
+mc2dr,mc2dr,missing,missing,marginal cell,,pharynx
+mc2v,mc2v,missing,missing,marginal cell,,pharynx
+mc3dl,mc3dl,missing,missing,marginal cell,,pharynx
+mc3dr,mc3dr,missing,missing,marginal cell,,pharynx
+mc3v,mc3v,missing,missing,marginal cell,,pharynx
+e1D,e1D,missing,missing,epithelium,,pharynx
+e1VL,e1V,missing,L,epithelium,,pharynx
+e1VR,e1V,missing,R,epithelium,,pharynx
+e2DL,e2D,missing,L,epithelium,,pharynx
+e2DR,e2D,missing,R,epithelium,,pharynx
+e2V,e2V,missing,missing,epithelium,,pharynx
+e3D,e3D,missing,missing,epithelium,,pharynx
+e3VL,e3V,missing,L,epithelium,,pharynx
+e3VR,e3V,missing,R,epithelium,,pharynx
+g1P,g1P,missing,missing,glial cell,,pharynx
+g1AL,g1A,missing,L,glial cell,,pharynx
+g1AR,g1A,missing,R,glial cell,,pharynx
+g2L,g2,missing,L,glial cell,,pharynx
+g2R,g2,missing,R,glial cell,,pharynx
+bm,bm,missing,missing,basement membrane,,pharynx
