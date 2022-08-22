@@ -16,7 +16,7 @@ const LIST_REF_NEURON, LIST_REF_CLASS, LIST_REF_CLASS_LR, LIST_REF_CLASS_DV, NEU
         DV = DV == "missing" ? "undefined" : DV
         LR = LR == "missing" ? "undefined" : LR
         dict_ = Dict("class"=>csv_[i,2], "DV"=>DV, "LR"=>LR,
-            "type"=>csv_[i,5], "note"=>csv_[i,6])
+            "type"=>csv_[i,5], "category"=>csv_[i,6], "note"=>csv_[i,7])
         neuron_dict[csv_[i,1]] = dict_
         
         if LR != "undefined"
