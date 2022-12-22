@@ -1,237 +1,132 @@
-"""
-    get_list_class(list_neuropal_label_to_roi, aggregate=true)
-
-Return a list of all classes in the datasets
-
-# Arguments
-- `list_neuropal_label_to_roi`: list of dictionaries mapping neuropal labels to roi
-- `aggregate::Bool`: if true, return a list of unique classes, otherwise return a list of list of classes
-"""
-function get_list_class(list_neuropal_label_to_roi, aggregate=true)
-    list_class = map(x->sort(unique(collect(keys(x)))), list_neuropal_label_to_roi)
-    if aggregate
-        return sort(unique(reduce(vcat, list_class)))
-    else
-        return list_class
-    end
-end
-
-"""
-    get_list_class_dv(list_neuropal_label_to_roi, aggregate=true)   
-
-Return a list of all classes with D/V in the datasets
-
-# Arguments
-- `list_neuropal_label_to_roi`: list of dictionaries mapping neuropal labels to roi
-- `aggregate`: if true, return a list of unique classes, otherwise return a list of list of classes
-"""
-function get_list_class_dv(list_neuropal_label_to_roi, aggregate=true)
-    list_class_ = []
-    for label_to_roi = list_neuropal_label_to_roi
-        list_ = []
-        for (class, dict_) = label_to_roi
-            for class_dv = unique(map(x->(x["neuron_class"], x["DV"]), dict_))
-                if !(class_dv in list_) && class_dv[2] != "missing"
-                    push!(list_, class_dv)
-                end
-            end
-        end
-        push!(list_class_, sort(map(x->x[2] == "undefined" ? x[1] : x[1] * x[2], list_)))
-    end
-    
-    if aggregate
-        return sort(unique(reduce(vcat, list_class_)))
-    else
-        return list_class_
-    end
-end
-
-"""
-    generate_list_class_custom_order(list_neuropal_order_info, list_class_dv=nothing)
-
-Return a list of all classes with D/V in the datasets
-
-# Arguments
-- `list_neuropal_order_info`: custom ordering data
-- `list_class_dv`: list of classes with D/V to check for missing classes
-"""
-function generate_list_class_custom_order(list_neuropal_order_info, list_class_dv=nothing)
-    list_class_order = String.(list_neuropal_order_info[2:end,3])
-    list_dv_order = String.(list_neuropal_order_info[2:end,4])
-    
-    list_class_ = []
-    for i = 1:size(list_class_order, 1)
-        class = list_class_order[i]
-        dv = list_dv_order[i]
-        if dv == "D" || dv == "V"
-            @assert class ∈ NeuroPALData.LIST_REF_CLASS_DV
-            push!(list_class_, (class, class * dv, dv))
-        elseif dv == "undefined"
-            push!(list_class_, (class, class, "undefined"))
-        elseif dv == "nothing"
-            push!(list_class_, (class, class, nothing))
+function get_neuron_roi(roi)
+    if isa(roi, AbstractString)
+        if occursin("/", roi)
+            return parse.(Int, split(roi, "/"))
         else
-            error("unknown dv configuration for $class")
+            return [parse(Int, roi)]
         end
-    end
-
-    # check that no class is missing in the ordering file
-    if !isnothing(list_class_dv)
-        for class = list_class_dv
-            if !(class ∈ map(x->x[2], list_class_))
-                @warn "class $(class) is not in the orderling file"
-            end
-        end
-    end
-
-    list_class_
-end
-
-"""
-    categorize_dorsal_ventral(label, roi_match, roi_match_confidence, θ_confidence, dict_fit)
-
-Categorize a neuron as dorsal or ventral
-
-# Arguments
-- `label`: dictionary of label information
-- `roi_match`: dictionary of roi matching
-- `roi_match_confidence`: dictionary of roi matching confidence
-- `θ_confidence`: confidence threshold for roi matching
-- `dict_fit`: dictionary of fit information
-"""
-function categorize_dorsal_ventral(label, roi_match, roi_match_confidence, θ_confidence, dict_fit)
-    (roi_gcamp, match_confidence) = match_roi(label["roi_id"],
-        roi_match, roi_match_confidence, θ_confidence)
-    
-    n_d = 0 
-    n_v = 0  
-    if isa(roi_gcamp, Int)
-        for (k,v) =  dict_fit["categorization"] # loop time segments
-            b = v["θh"]
-            if roi_gcamp in b["all"]
-                if roi_gcamp in b["dorsal"]
-                   n_d += 1 
-                end
-                if roi_gcamp in b["ventral"]
-                    n_v += 1
-                end
-            end
-        end
-    end
-
-    if n_d == 0
-        if n_v == 0 # d: 0, v: 0
-            return nothing
-        else # d: 0, v: 1
-            return "V"
+    elseif isa(roi, Int)
+        return [roi]
+    elseif isa(roi, Float64)
+        if isinteger(roi)
+            return [convert(Int, roi)]
+        else
+            error("ROI($roi) is not integer")
         end
     else
-        if n_v == 0 # d: 1, v: 0
-            return "D"
-        else # d: 1, v: 1
-            return nothing
-        end
+        error("unknown data type for neuron ROI")
     end
 end
 
 """
-    get_label_class(class::AbstractString, class_dv::Union{String,Nothing}, list_label,
-        roi_match, roi_match_confidence, θ_confidence, dict_fit,
-        list_class_classify_dv_enc=nothing)
+    import_neuropal_label(path_label::String)
 
-Return a list of labels that match the class and D/V
+Import NeuroPAL label data from a file.
 
-Arguments
-- `class`: class to match
-- `class_dv`: D/V to match
-- `list_label`: list of labels
-- `roi_match`: dictionary of roi matching
-- `roi_match_confidence`: dictionary of roi matching confidence
-- `θ_confidence`: confidence threshold for roi matching
-- `dict_fit`: dictionary of fit information
-- `list_class_classify_dv_enc`: list of classes to classify D/V using encodding
-"""
-function get_label_class(class::AbstractString, class_dv::Union{String,Nothing}, list_label,
-    roi_match, roi_match_confidence, θ_confidence, dict_fit,
-    list_class_classify_dv_enc=nothing)
-    list_match = []
-
-    if class ∈ NeuroPALData.LIST_REF_CLASS_DV
-        for label_ = list_label
-            label_dv = if class ∈ list_class_classify_dv_enc
-                categorize_dorsal_ventral(label_, roi_match,
-                    roi_match_confidence, θ_confidence, dict_fit)
-            else
-                label_["DV"]
-            end
-            if label_dv == class_dv
-                push!(list_match, label_)
-            end
-        end
-    else # no dv        
-        append!(list_match, list_label)
-    end
-
-    list_match
-end
-
-"""
-    get_list_match_dict(list_neuropal_label, list_class_ordered)
-
-Return a list of dictionaries with the matching labels for each class
-
+Returns neuropal_roi_to_label, neuropal_label_to_roi
 # Arguments
-- `list_neuropal_label`: list of neuropal labels
-- `list_data_dict`: list of data dictionaries
-- `list_dict_fit`: list of fit dictionaries
-- `list_class_ordered`: out of `get_list_class_ordered`
-- `list_class_classify_dv_enc`: list of classes to classify D/V using encodding
+- `path_label::String`: path to the label file. Supported: csv, xlsx
 """
-function get_list_match_dict(list_neuropal_label, list_data_dict, list_dict_fit, list_class_ordered, list_class_classify_dv_enc)
-    list_match_dict = []
-
-    θ_confidence = 2.
-    θ_confidence_label = 2.
-
-    for (idx_uid, dict_neuropal) = enumerate(list_neuropal_label)
-        data_dict =  list_data_dict[idx_uid]
-        neuropal_reg = data_dict["neuropal_registration"]
-        dict_fit = list_dict_fit[idx_uid]
-        roi_match = neuropal_reg["roi_match"]
-        roi_match_confidence = neuropal_reg["roi_match_confidence"]
-
-        match_roi_class = Dict()
-        match_class_roi = Dict()
+function import_neuropal_label(path_label::String)
+    if endswith(path_label, ".xlsx")
+        list_sheets = XLSX.openxlsx(path_label, mode="r") do xlsx
+            XLSX.sheetnames(xlsx)
+        end
+        list_sheets_label = sort(filter(x->occursin("labels",x) && !occursin("progress",x), list_sheets))
+        sheet_ = list_sheets_label[end]
+        println("reading $(sheet_) for $path_label")
+        sheet_label = XLSX.readtable(path_label, sheet_)
+        col_label = sheet_label.column_labels
+        data_ = vcat(reshape(string.(col_label), (1,length(col_label))),
+            hcat(sheet_label.data...))
         
-        for (idx_class, (class, class_name, class_dv)) = enumerate(list_class_ordered)
-            if haskey(dict_neuropal[2], class)
-                list_label = dict_neuropal[2][class]
-                list_match = get_label_class(class, class_dv, list_label,
-                    roi_match, roi_match_confidence, θ_confidence,
-                    dict_fit, list_class_classify_dv_enc)            
+        import_neuropal_label(data_)
+    elseif endswith(path_label, ".csv")
+        data_ = readdlm(path_label, ',')
+        import_neuropal_label(data_)
+    else
+        error("unsupported data type. supported: csv, xlsx")
+    end
+end
 
-                match_ = []
-                for match = list_match
-                    (roi_gcamp, match_confidence) = match_roi(match["roi_id"], roi_match, roi_match_confidence, θ_confidence)
-                    if isa(roi_gcamp, Int) && match["confidence"] >= θ_confidence_label && !occursin("alt", match["label"])
-                        push!(match_, (match, roi_gcamp, match_confidence))
-                        match_roi_class[roi_gcamp] = match
-                    end # check if matchable
-                end # check match
+"""
+    import_neuropal_label(data_::Matrix)
 
-                # if class ∈ NeuroPALData.LIST_REF_CLASS_DV
-                if length(match_) > 0
-                    if !(isnothing(class_dv)) && class_dv !== "undefined"
-                        match_class_roi[class * class_dv] = match_
-                    else    
-                        match_class_roi[class] = match_
-                    end
-                end
-            end # has key class
-        end # if class is labeled
+Import NeuroPAL label data from a matrix.
+
+Returns neuropal_roi_to_label, neuropal_label_to_roi
+# Arguments
+- `data_::Matrix`: a matrix of data. The first row is the column label.
+"""
+function import_neuropal_label(data_::Matrix)
+    neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
+    list_roi = get_neuron_roi.(data_[2:end,3])
+    list_roi_flat = sort(vcat(list_roi...))
+    list_roi_repeat = unique(filter(x->count(x .== list_roi_flat) > 1, list_roi_flat))
+    list_roi_norepeat = sort(setdiff(unique(list_roi_flat), list_roi_repeat))
+    if length(list_roi_repeat) > 0
+        @warn("ROI $(list_roi_repeat) are repeated. Excluding them.")
+    end
+
+    for roi_id = list_roi_norepeat
+        idx_row_match = findall(roi_id .∈ list_roi)        
+        list_match = Dict{String,Any}[]
+
+        for i_row = (idx_row_match .+ 1) # offset column label row
+            label = data_[i_row,1]
+            neuron_class, DV, LR = get_neuron_class(label)
+            roi_id_ = data_[i_row,3]
+            confidence = data_[i_row,4]
+            comment = data_[i_row,5]
+            region = data_[i_row,6]
+            
+            match_ = Dict{}()
+            match_["label"] = label
+            match_["roi_id"] = get_neuron_roi(roi_id_)
+            match_["confidence"] = confidence
+            match_["region"] = region
+            match_["neuron_class"] = neuron_class
+            match_["LR"] = LR
+            match_["DV"] = DV
+            
+            push!(list_match, match_)
+        end        
         
-        push!(list_match_dict, (match_roi_class, match_class_roi))
-    end # for dataset
+        neuropal_roi_to_label[roi_id] = list_match
+    end
     
-    return list_match_dict
+    neuropal_label_to_roi = Dict{String, Any}()
+    list_class = map(x->get_neuron_class(x)[1], data_[2:end, 1])
+    for class = unique(list_class)
+        idx_row_match = findall(class .== list_class)
+        list_match = Dict{String,Any}[]
+        for i_row = (idx_row_match .+ 1) # offset column label
+            label = data_[i_row,1]
+            neuron_class, DV, LR = get_neuron_class(label)
+            roi_id_ = data_[i_row,3]
+            confidence = data_[i_row,4]
+            comment = data_[i_row,5]
+            region = data_[i_row,6]
+
+            match_ = Dict{}()
+            match_["label"] = label
+            match_["roi_id"] = get_neuron_roi(roi_id_)
+            match_["confidence"] = confidence
+            match_["region"] = region
+            match_["neuron_class"] = neuron_class
+            match_["LR"] = LR
+            match_["DV"] = DV
+
+            # println("$label, $DV - $(typeof(DV))")
+
+            # add only if not repeated
+            if all([!(roi in list_roi_repeat) for roi = get_neuron_roi(roi_id_)])
+                push!(list_match, match_)
+            end
+        end        
+
+        neuropal_label_to_roi[class] = list_match
+    end
+    
+    neuropal_roi_to_label, neuropal_label_to_roi
 end
