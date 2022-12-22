@@ -47,6 +47,15 @@ function string_char_n_match(s1::String, s2::String)
     return n
 end
 
+"""
+    invert_left_right(neuron::String)
+
+Invert the left-right orientation of a neuron name.
+
+e.g. `invert_left_right("RMEL")` returns `("RMER", true)
+# Arguments
+- `neuron::String`: Neuron label (e.g. RME)
+"""
 function invert_left_right(neuron)
     class, LR, DV = get_neuron_class(neuron)
     if class ∈ list_ref_class_lr
@@ -62,6 +71,15 @@ function invert_left_right(neuron)
     return neuron, false
 end
 
+"""
+    invert_dorsal_ventral(neuron::String)
+
+Invert the dorsal-ventral orientation of a neuron name.
+
+e.g. `invert_dorsal_ventral("RMEV")` returns `("RMED", true)
+# Arguments
+- `neuron::String`: Neuron label (e.g. RME)
+"""
 function invert_dorsal_ventral(neuron)
     class, LR, DV = get_neuron_class(neuron)
     
@@ -87,6 +105,17 @@ function invert_dorsal_ventral(neuron)
     return join(neuron_), q_flip
 end
 
+"""
+    get_neuron_class(neuron::String)
+
+Returns (neuron class, DV, LR)
+
+e.g. `get_neuron_class("RMEL")` returns `("RME", "L", "undefined")
+"undefined": D/V or L/R is not defined for the neuron (e.g. "AVA" would return "undefined" for D/V")
+"missing": D/V or L/R is missing for the neuron (i.e. was not able to label)
+# Arguments
+- `neuron::String`: Neuron label (e.g. RME)
+"""
 function get_neuron_class(neuron)
     list_class = sort(unique([v["class"] for (k,v) = NEURON_REF_DICT]))
     neuron_ = occursin("-", neuron) ? split(neuron, "-")[1] : neuron
