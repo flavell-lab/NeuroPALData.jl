@@ -1,4 +1,6 @@
-﻿neuron,neuron class,DV,LR,cell type,cell category,"notes, sensilla, modality"
+neuron,neuron class,DV,LR,cell type,cell category,"notes, sensilla, modality"
+HSNL,HSN,missing,L,interneuron,,
+HSNR,HSN,missing,R,interneuron,,
 ASJL,ASJ,missing,L,sensory,SN6,amphid
 ASJR,ASJ,missing,R,sensory,SN6,amphid
 ASKL,ASK,missing,L,sensory,SN6,amphid
