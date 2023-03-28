@@ -62,10 +62,19 @@ function import_neuropal_label(data_::Matrix)
     neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
     list_roi = get_neuron_roi.(data_[2:end,3])
     list_roi_flat = sort(vcat(list_roi...))
+
+    # check if there are repeated ROI
     list_roi_repeat = unique(filter(x->count(x .== list_roi_flat) > 1, list_roi_flat))
     list_roi_norepeat = sort(setdiff(unique(list_roi_flat), list_roi_repeat))
     if length(list_roi_repeat) > 0
-        @warn("ROI $(list_roi_repeat) are repeated. Excluding them.")
+        @warn("ROI $(list_roi_repeat) are repeated. Automatically excluded.")
+    end
+
+    # check if there are repeated label
+    for (k,v) = countmap(data_[2:end,1])
+        if v > 1
+            @warn("Label $k is repeated $v times. NOT automatically excluded.")
+        end
     end
 
     for roi_id = list_roi_norepeat
