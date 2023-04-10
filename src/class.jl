@@ -58,21 +58,39 @@ Return a list of all classes with D/V in the datasets
 function generate_list_class_custom_order(list_neuropal_order_info, list_class_dv=nothing)
     list_class_order = String.(list_neuropal_order_info[2:end,3])
     list_dv_order = String.(list_neuropal_order_info[2:end,4])
+    list_lr_order = String.(list_neuropal_order_info[2:end,5])
     
-    list_class_ = []
+    list_class_ = Tuple[]
     for i = 1:size(list_class_order, 1)
         class = list_class_order[i]
         dv = list_dv_order[i]
+        lr = list_lr_order[i]
+        
+        info_ = Union{String,Nothing}[]
         if dv == "D" || dv == "V"
             @assert class ∈ NeuroPALData.LIST_REF_CLASS_DV
-            push!(list_class_, (class, class * dv, dv))
+            append!(info_, [class, class * dv, dv])
         elseif dv == "undefined"
-            push!(list_class_, (class, class, "undefined"))
+            append!(info_, [class, class, "undefined"])
         elseif dv == "nothing"
-            push!(list_class_, (class, class, nothing))
+            append!(info_, [class, class, nothing])
         else
             error("unknown dv configuration for $class")
         end
+        
+        if lr == "L" || lr == "R"
+            @assert class ∈ NeuroPALData.LIST_REF_CLASS_LR
+            push!(info_, lr)
+            info_[2] *= lr
+        else
+            if class ∈ NeuroPALData.LIST_REF_CLASS_LR
+                push!(info_, nothing)
+            else
+                push!(info_, "undefined")
+            end
+        end
+        
+        push!(list_class_, tuple(info_...))
     end
 
     # check that no class is missing in the ordering file

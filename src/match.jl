@@ -30,7 +30,7 @@ Return a list of dictionaries with the matching labels for each class
 - `θ_confidence_label`: confidence threshold for label matching (default: 2.)
 """
 function get_list_match_dict(list_neuropal_label; list_data_dict, list_dict_fit, list_class_ordered,
-    list_class_classify_dv_enc, θ_confidence = 2., θ_confidence_label = 2.)
+    list_class_classify_dv_enc, θ_confidence = 2., θ_confidence_label = 2.5)
     list_match_dict = []
 
     for (idx_uid, dict_neuropal) = enumerate(list_neuropal_label)
@@ -43,32 +43,46 @@ function get_list_match_dict(list_neuropal_label; list_data_dict, list_dict_fit,
         match_roi_class = Dict()
         match_class_roi = Dict()
         
-        for (idx_class, (class, class_name, class_dv)) = enumerate(list_class_ordered)
+        for (idx_class, (class, class_name, class_dv, class_lr)) = enumerate(list_class_ordered)
             if haskey(dict_neuropal[2], class)
                 list_label = dict_neuropal[2][class]
                 list_match = get_label_class(class, class_dv, list_label,
                     roi_match, roi_match_confidence, θ_confidence,
                     dict_fit, list_class_classify_dv_enc)            
 
-                match_ = []
+                list_match_filt = []
                 for match = list_match
                     (roi_gcamp, match_confidence) = match_roi(match["roi_id"], roi_match, roi_match_confidence, θ_confidence)
                     if isa(roi_gcamp, Int) && match["confidence"] >= θ_confidence_label && !occursin("alt", match["label"])
-                        push!(match_, (match, roi_gcamp, match_confidence))
+                        push!(list_match_filt, (match, roi_gcamp, match_confidence))
                         match_roi_class[roi_gcamp] = match
                     end # check if matchable
                 end # check match
 
-                # if class ∈ NeuroPALData.LIST_REF_CLASS_DV
-                if length(match_) > 0
+                if length(list_match_filt) > 0
+                    class_ = class 
                     if !(isnothing(class_dv)) && class_dv !== "undefined"
-                        match_class_roi[class * class_dv] = match_
-                    else    
-                        match_class_roi[class] = match_
+                        class_ *= class_dv
+                    end
+                    match_class_roi[class_] = list_match_filt
+
+                    #lr
+                    if class_lr == "L" || class_lr == "R"
+                        list_match_filt_lr = []
+                        for match = list_match_filt
+                            if match[1]["LR"] == class_lr
+                                push!(list_match_filt_lr, match)
+                            end
+                        end
+                        
+                        if length(list_match_filt_lr) > 0
+                            match_class_roi[class_ * class_lr] = list_match_filt_lr
+                        end
+                        delete!(match_class_roi, class_)
                     end
                 end
             end # has key class
-        end # if class is labeled
+        end # for list_class_ordered
         
         push!(list_match_dict, (match_roi_class, match_class_roi))
     end # for dataset
