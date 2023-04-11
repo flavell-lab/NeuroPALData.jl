@@ -27,7 +27,7 @@ Returns neuropal_roi_to_label, neuropal_label_to_roi
 # Arguments
 - `path_label::String`: path to the label file. Supported: csv, xlsx
 """
-function import_neuropal_label(path_label::String)
+function import_neuropal_label(path_label::String; verbose=true)
     if endswith(path_label, ".xlsx")
         list_sheets = XLSX.openxlsx(path_label, mode="r") do xlsx
             XLSX.sheetnames(xlsx)
@@ -40,7 +40,7 @@ function import_neuropal_label(path_label::String)
         data_ = vcat(reshape(string.(col_label), (1,length(col_label))),
             hcat(sheet_label.data...))
         
-        import_neuropal_label(data_)
+        import_neuropal_label(data_, verbose=verbose)
     elseif endswith(path_label, ".csv")
         data_ = readdlm(path_label, ',')
         import_neuropal_label(data_)
@@ -58,7 +58,7 @@ Returns neuropal_roi_to_label, neuropal_label_to_roi
 # Arguments
 - `data_::Matrix`: a matrix of data. The first row is the column label.
 """
-function import_neuropal_label(data_::Matrix)
+function import_neuropal_label(data_::Matrix; verbose=true)
     neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
     list_roi = get_neuron_roi.(data_[2:end,3])
     list_roi_flat = sort(vcat(list_roi...))
@@ -66,13 +66,13 @@ function import_neuropal_label(data_::Matrix)
     # check if there are repeated ROI
     list_roi_repeat = unique(filter(x->count(x .== list_roi_flat) > 1, list_roi_flat))
     list_roi_norepeat = sort(setdiff(unique(list_roi_flat), list_roi_repeat))
-    if length(list_roi_repeat) > 0
+    if length(list_roi_repeat) > 0 && verbose
         @warn("ROI $(list_roi_repeat) are repeated. Automatically excluded.")
     end
 
     # check if there are repeated label
     for (k,v) = countmap(data_[2:end,1])
-        if v > 1
+        if v > 1 && verbose
             @warn("Label $k is repeated $v times. NOT automatically excluded.")
         end
     end
