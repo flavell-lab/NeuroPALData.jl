@@ -97,7 +97,7 @@ function generate_list_class_custom_order(list_neuropal_order_info, list_class_d
     if !isnothing(list_class_dv)
         for class = list_class_dv
             if !(class ∈ map(x->x[2], list_class_))
-                @warn "class $(class) is not in the orderling file"
+                @warn "class $(class) is not in the ordering file"
             end
         end
     end
