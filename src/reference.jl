@@ -117,6 +117,7 @@ e.g. `get_neuron_class("RMEL")` returns `("RME", "L", "undefined")
 - `neuron::String`: Neuron label (e.g. RME)
 """
 function get_neuron_class(neuron)
+    neuron = join([isletter(c) ? uppercase(c) : c for c in s])
     list_class = sort(unique([v["class"] for (k,v) = NEURON_REF_DICT]))
     neuron_ = occursin("-", neuron) ? split(neuron, "-")[1] : neuron
     neuron_ = String(strip(neuron_))
@@ -151,10 +152,12 @@ function get_neuron_class(neuron)
                 end
             end
         else
-            error("neuron $(neuron_) is unknown")
+            @warn("neuron $(neuron_) is unknown")
+            return nothing, nothing, nothing
         end
     else
-        error("neuron $(neuron_) is unknown")
+        @warn("neuron $(neuron_) is unknown")
+        return nothing, nothing, nothing
     end
     
     class, DV, LR

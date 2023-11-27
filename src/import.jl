@@ -84,10 +84,23 @@ function import_neuropal_label(data_::Matrix; verbose=true)
         for i_row = (idx_row_match .+ 1) # offset column label row
             label = data_[i_row,1]
             neuron_class, DV, LR = get_neuron_class(label)
+            if isnothing(neuron_class)
+                continue
+            end
             roi_id_ = data_[i_row,3]
             confidence = data_[i_row,4]
-            comment = data_[i_row,5]
-            region = data_[i_row,6]
+            
+            # optional fields
+            if length(data_[i_row,:]) >= 5
+                comment = data_[i_row,5]
+            else
+                comment = ""
+            end
+            if length(data_[i_row,:]) >= 6
+                region = data_[i_row,6]
+            else
+                region = ""
+            end
             
             match_ = Dict{}()
             match_["label"] = label
