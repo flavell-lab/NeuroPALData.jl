@@ -1,4 +1,7 @@
 function get_neuron_roi(roi)
+    if all(isspace, s)
+        return nothing
+    end
     if isa(roi, AbstractString)
         if occursin("/", roi)
             return parse.(Int, split(roi, "/"))
@@ -60,7 +63,7 @@ Returns neuropal_roi_to_label, neuropal_label_to_roi
 """
 function import_neuropal_label(data_::Matrix; verbose=true)
     neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
-    list_roi = get_neuron_roi.(data_[2:end,3])
+    list_roi = filter(x->!isnothing(x), get_neuron_roi.(data_[2:end,3]))
     list_roi_flat = sort(vcat(list_roi...))
 
     # check if there are repeated ROI
