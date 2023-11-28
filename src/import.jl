@@ -83,7 +83,7 @@ function import_neuropal_label(data_::Matrix; verbose=true)
 
         for i_row = (idx_row_match .+ 1) # offset column label row
             label = data_[i_row,1]
-            neuron_class, DV, LR = get_neuron_cl ass(label)
+            neuron_class, DV, LR = get_neuron_class(label)
             if isnothing(neuron_class)
                 continue
             end
