@@ -119,8 +119,9 @@ e.g. `get_neuron_class("RMEL")` returns `("RME", "L", "undefined")
 - `neuron::String`: Neuron label (e.g. RME)
 """
 function get_neuron_class(neuron)
-    if neuron in LIST_IGNORE:
+    if neuron in LIST_IGNORE
         return nothing, nothing, nothing
+    end
     neuron = join([isletter(c) ? uppercase(c) : c for c in neuron])
     list_class = sort(unique([v["class"] for (k,v) = NEURON_REF_DICT]))
     neuron_ = occursin("-", neuron) ? split(neuron, "-")[1] : neuron
