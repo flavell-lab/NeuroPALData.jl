@@ -2,6 +2,8 @@ const path_neuron_class_all = joinpath(dirname(@__FILE__), "reference", "neuron_
 
 const LIST_REF_CLASS_SEXTET = ["IL1", "IL2", "RMD", "GLR"]
 
+const LIST_IGNORE = ["glia", "granule"]
+
 const LIST_REF_NEURON, LIST_REF_CLASS, LIST_REF_CLASS_LR, LIST_REF_CLASS_DV, NEURON_REF_DICT = let
     csv_ = readdlm(path_neuron_class_all,',')
     list_neuron = String.(csv_[2:end,1])
@@ -117,6 +119,8 @@ e.g. `get_neuron_class("RMEL")` returns `("RME", "L", "undefined")
 - `neuron::String`: Neuron label (e.g. RME)
 """
 function get_neuron_class(neuron)
+    if neuron in LIST_IGNORE:
+        return nothing, nothing, nothing
     neuron = join([isletter(c) ? uppercase(c) : c for c in neuron])
     list_class = sort(unique([v["class"] for (k,v) = NEURON_REF_DICT]))
     neuron_ = occursin("-", neuron) ? split(neuron, "-")[1] : neuron
