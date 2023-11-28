@@ -147,7 +147,8 @@ function import_neuropal_label(data_::Matrix; verbose=true)
             # println("$label, $DV - $(typeof(DV))")
 
             # add only if not repeated
-            if all([!(roi in list_roi_repeat) for roi = get_neuron_roi(roi_id_)])
+            rois = get_neuron_roi(roi_id_)
+            if !(isnothing(rois)) && all([!(roi in list_roi_repeat) for roi = rois])
                 push!(list_match, match_)
             end
         end        
