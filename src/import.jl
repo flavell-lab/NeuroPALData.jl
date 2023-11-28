@@ -1,5 +1,5 @@
 function get_neuron_roi(roi)
-    if all(isspace, s)
+    if all(isspace, roi)
         return nothing
     end
     if isa(roi, AbstractString)
