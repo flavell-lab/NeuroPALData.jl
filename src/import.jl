@@ -1,8 +1,8 @@
 function get_neuron_roi(roi)
-    if all(isspace, roi)
-        return nothing
-    end
     if isa(roi, AbstractString)
+        if all(isspace, roi)
+            return nothing
+        end
         if occursin("/", roi)
             return parse.(Int, split(roi, "/"))
         else
