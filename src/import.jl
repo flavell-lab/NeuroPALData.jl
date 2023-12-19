@@ -1,5 +1,8 @@
 function get_neuron_roi(roi)
     if isa(roi, AbstractString)
+        if all(isspace, roi)
+            return nothing
+        end
         if occursin("/", roi)
             return parse.(Int, split(roi, "/"))
         else
@@ -60,7 +63,7 @@ Returns neuropal_roi_to_label, neuropal_label_to_roi
 """
 function import_neuropal_label(data_::Matrix; verbose=true)
     neuropal_roi_to_label = Dict{Int, Vector{Dict}}()
-    list_roi = get_neuron_roi.(data_[2:end,3])
+    list_roi = filter(x->!isnothing(x), get_neuron_roi.(data_[2:end,3]))
     list_roi_flat = sort(vcat(list_roi...))
 
     # check if there are repeated ROI
@@ -84,10 +87,23 @@ function import_neuropal_label(data_::Matrix; verbose=true)
         for i_row = (idx_row_match .+ 1) # offset column label row
             label = data_[i_row,1]
             neuron_class, DV, LR = get_neuron_class(label)
+            if isnothing(neuron_class)
+                continue
+            end
             roi_id_ = data_[i_row,3]
             confidence = data_[i_row,4]
-            comment = data_[i_row,5]
-            region = data_[i_row,6]
+            
+            # optional fields
+            if length(data_[i_row,:]) >= 5
+                comment = data_[i_row,5]
+            else
+                comment = ""
+            end
+            if length(data_[i_row,:]) >= 6
+                region = data_[i_row,6]
+            else
+                region = ""
+            end
             
             match_ = Dict{}()
             match_["label"] = label
@@ -106,6 +122,8 @@ function import_neuropal_label(data_::Matrix; verbose=true)
     
     neuropal_label_to_roi = Dict{String, Any}()
     list_class = map(x->get_neuron_class(x)[1], data_[2:end, 1])
+    # remove `nothing` entries from `list_class`
+    list_class = filter(x->!isnothing(x), list_class)
     for class = unique(list_class)
         idx_row_match = findall(class .== list_class)
         list_match = Dict{String,Any}[]
@@ -114,8 +132,19 @@ function import_neuropal_label(data_::Matrix; verbose=true)
             neuron_class, DV, LR = get_neuron_class(label)
             roi_id_ = data_[i_row,3]
             confidence = data_[i_row,4]
-            comment = data_[i_row,5]
-            region = data_[i_row,6]
+
+            # optional fields
+            if length(data_[i_row,:]) >= 5
+                comment = data_[i_row,5]
+            else
+                comment = ""
+            end
+
+            if length(data_[i_row,:]) >= 6
+                region = data_[i_row,6]
+            else
+                region = ""
+            end
 
             match_ = Dict{}()
             match_["label"] = label
@@ -129,7 +158,8 @@ function import_neuropal_label(data_::Matrix; verbose=true)
             # println("$label, $DV - $(typeof(DV))")
 
             # add only if not repeated
-            if all([!(roi in list_roi_repeat) for roi = get_neuron_roi(roi_id_)])
+            rois = get_neuron_roi(roi_id_)
+            if !(isnothing(rois)) && all([!(roi in list_roi_repeat) for roi = rois])
                 push!(list_match, match_)
             end
         end        
