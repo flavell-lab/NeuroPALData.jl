@@ -122,9 +122,10 @@ function import_neuropal_label(data_::Matrix; verbose=true)
     
     neuropal_label_to_roi = Dict{String, Any}()
     list_class = map(x->get_neuron_class(x)[1], data_[2:end, 1])
-    # remove `nothing` entries from `list_class`
-    list_class = filter(x->!isnothing(x), list_class)
     for class = unique(list_class)
+        if isnothing(class)
+            continue
+        end
         idx_row_match = findall(class .== list_class)
         list_match = Dict{String,Any}[]
         for i_row = (idx_row_match .+ 1) # offset column label
